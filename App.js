@@ -61,14 +61,22 @@ class App extends React.Component<{}, State> {
     let Button;
     if (locationError) {
       Button = (
-        <TouchableOpacity onPress={this.onPress} style={{ backgroundColor: '#DDDDDD' }}>
+        <TouchableOpacity
+          onPress={this.onPress}
+          style={{ backgroundColor: '#DDDDDD' }}
+        >
           <Text>Retry</Text>
         </TouchableOpacity>
       );
     } else {
       Button = (
-        <TouchableOpacity onPress={this.onPress} style={{ backgroundColor: '#DDDDDD' }}>
-          <Text>{nearbyStores.length !== 0 ? 'Refresh Location' : 'Find boba'}</Text>
+        <TouchableOpacity
+          onPress={this.onPress}
+          style={{ backgroundColor: '#DDDDDD' }}
+        >
+          <Text>
+            {nearbyStores.length !== 0 ? 'Refresh Location' : 'Find boba'}
+          </Text>
         </TouchableOpacity>
       );
     }
