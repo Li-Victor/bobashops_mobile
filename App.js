@@ -4,43 +4,81 @@
  * @flow
  */
 
-import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import * as React from 'react';
+import { Text, View, TouchableOpacity } from 'react-native';
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-  android: 'Double tap R on your keyboard to reload,\n' + 'Shake or press menu button for dev menu'
-});
+type State = {
+  loading: boolean,
+  locationError: boolean,
+  nearbyStores: Array<Bobashops>
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF'
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5
-  }
-});
+class App extends React.Component<{}, State> {
+  state = {
+    loading: false,
+    locationError: false,
+    nearbyStores: []
+  };
 
-type Props = {};
-export default class App extends Component<Props> {
+  onPress = async () => {
+    this.setState({
+      locationError: false,
+      loading: true
+    });
+
+    try {
+      const position = await this.getCurrentPosition({
+        timeout: 60000,
+        maximumAge: 10000,
+        enableHighAccuracy: false
+      });
+      const { latitude, longitude } = position.coords;
+
+      const response = await fetch(
+        `https://bobashops.herokuapp.com/shops?lat=${latitude}&long=${longitude}`
+      );
+      const nearbyStores = await response.json();
+      this.setState({
+        loading: false,
+        nearbyStores
+      });
+    } catch (error) {
+      this.setState({
+        locationError: true,
+        loading: false
+      });
+    }
+  };
+
+  getCurrentPosition = options =>
+    new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject, options);
+    });
+
   render() {
-    console.log('render');
+    const { loading, locationError, nearbyStores } = this.state;
+
+    let Button;
+    if (locationError) {
+      Button = (
+        <TouchableOpacity onPress={this.onPress} style={{ backgroundColor: '#DDDDDD' }}>
+          <Text>Retry</Text>
+        </TouchableOpacity>
+      );
+    } else {
+      Button = (
+        <TouchableOpacity onPress={this.onPress} style={{ backgroundColor: '#DDDDDD' }}>
+          <Text>{nearbyStores.length !== 0 ? 'Refresh Location' : 'Find boba'}</Text>
+        </TouchableOpacity>
+      );
+    }
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
+      <View>
+        <Text>Bobashops</Text>
+        {loading ? <Text>Finding Nearby Open Boba Stores...</Text> : Button}
       </View>
     );
   }
 }
+
+export default App;
