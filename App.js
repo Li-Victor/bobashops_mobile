@@ -6,6 +6,7 @@
 
 import * as React from 'react';
 import { Text, View, TouchableOpacity } from 'react-native';
+import List from './components/List';
 
 type State = {
   loading: boolean,
@@ -83,7 +84,14 @@ class App extends React.Component<{}, State> {
     return (
       <View>
         <Text>Bobashops</Text>
-        {loading ? <Text>Finding Nearby Open Boba Stores...</Text> : Button}
+        {loading ? (
+          <Text>Finding Nearby Open Boba Stores...</Text>
+        ) : (
+          <React.Fragment>
+            {Button}
+            {nearbyStores.length > 0 && <List nearbyStores={nearbyStores} />}
+          </React.Fragment>
+        )}
       </View>
     );
   }
