@@ -11,7 +11,7 @@ import List from './components/List';
 type State = {
   loading: boolean,
   locationError: boolean,
-  nearbyStores: Array<Bobashops>
+  nearbyStores: Array<BobaShops>
 };
 
 class App extends React.Component<{}, State> {
@@ -51,7 +51,11 @@ class App extends React.Component<{}, State> {
     }
   };
 
-  getCurrentPosition = options =>
+  getCurrentPosition = (options: {
+    enableHighAccuracy: boolean,
+    timeout: number,
+    maximumAge: number
+  }) =>
     new Promise((resolve, reject) => {
       navigator.geolocation.getCurrentPosition(resolve, reject, options);
     });
@@ -66,7 +70,9 @@ class App extends React.Component<{}, State> {
           onPress={this.onPress}
           style={{ backgroundColor: '#DDDDDD' }}
         >
-          <Text>Retry</Text>
+          <Text>
+            Retry
+          </Text>
         </TouchableOpacity>
       );
     } else {
@@ -83,9 +89,13 @@ class App extends React.Component<{}, State> {
     }
     return (
       <View>
-        <Text>Bobashops</Text>
+        <Text>
+          Bobashops
+        </Text>
         {loading ? (
-          <Text>Finding Nearby Open Boba Stores...</Text>
+          <Text>
+            Finding Nearby Open Boba Stores...
+          </Text>
         ) : (
           <React.Fragment>
             {Button}
